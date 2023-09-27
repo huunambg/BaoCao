@@ -6,7 +6,6 @@ import 'package:location/location.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:personnel_5chaumedia/Views/admin/listmac.dart';
 import 'package:personnel_5chaumedia/Presenters/networks.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Example app for wifi_scan plugin.
 class Set_Mac_Wifi extends StatefulWidget {
@@ -21,7 +20,6 @@ class _Set_Mac_WifiState extends State<Set_Mac_Wifi> {
   Location location = Location();
   bool? _serviceEnabled;
   PermissionStatus? _permissionGranted;
-  LocationData? _locationData;
   NetworkInfo networkInfo = NetworkInfo();
   String? mac, name;
   final Connectivity _connectivity = Connectivity();
@@ -48,8 +46,6 @@ class _Set_Mac_WifiState extends State<Set_Mac_Wifi> {
         return;
       }
     }
-    // Get location data (optional)
-    _locationData = await location.getLocation();
   }
 
   @override
@@ -131,10 +127,6 @@ class _Set_Mac_WifiState extends State<Set_Mac_Wifi> {
                           ),
                         );
                         if (check_click == true) {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          String? id_company =
-                              await prefs.getString("company_id");
                           if (await NetworkWork_Presenters().add_MAC_WIFI(
                                   namecontroller.text, maccontroller.text) ==
                               "Success") {
