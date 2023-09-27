@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819993843619",
+    "project_id": "baocao5chaumedia-9b266",
+    "storage_bucket": "baocao5chaumedia-9b266.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819993843619:android:174468ccf8a02134902c16",
+        "android_client_info": {
+          "package_name": "com.baocao.personnel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrrtQs0kWB7cw9tlvRAu0UcH6so5Ukwq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
