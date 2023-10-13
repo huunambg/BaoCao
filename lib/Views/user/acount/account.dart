@@ -1,22 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cherry_toast/cherry_toast.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:personnel_5chaumedia/Models/countdown.dart';
 import 'package:personnel_5chaumedia/Models/datauser.dart';
-import 'package:personnel_5chaumedia/Views/editpassword.dart';
-import 'package:personnel_5chaumedia/Views/editprofile.dart';
-import 'package:personnel_5chaumedia/Views/login.dart';
-import 'package:personnel_5chaumedia/Views/loginnew.dart';
-import 'package:personnel_5chaumedia/Presenters/networks.dart';
+import 'package:personnel_5chaumedia/Presenters/account_presenter.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
+import 'package:personnel_5chaumedia/Sounds/sound.dart';
+import 'package:personnel_5chaumedia/Views/user/acount/acount_interface.dart';
+import 'package:personnel_5chaumedia/Views/user/editpassword.dart';
+import 'package:personnel_5chaumedia/Views/user/editprofile.dart';
+import 'package:personnel_5chaumedia/Views/login/login.dart';
 import '/Models/settings.dart';
 import '/Widgets/itemaccount.dart';
-import '/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,8 +25,11 @@ class Account extends StatefulWidget {
   State<Account> createState() => _AccountState();
 }
 
-class _AccountState extends State<Account> {
-  AudioPlayer player = AudioPlayer();
+class _AccountState extends State<Account> implements Account_Interface {
+  late Account_Presenter _account_presenter;
+  _AccountState() {
+    _account_presenter = new Account_Presenter(this);
+  }
   String? id_per;
   bool check_color = false;
   int check_exist_Notification_visted = 0;
@@ -77,7 +78,7 @@ class _AccountState extends State<Account> {
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
-),
+                ),
                 Text("Nhân viên chính thức")
               ],
             ),
@@ -87,19 +88,13 @@ class _AccountState extends State<Account> {
                 onpressed: () {
                   context.read<DataUser_Provider>().set_base64_img_edit(
                       context.read<DataUser_Provider>().base64_img());
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Edit_Profile_Screen()));
+                  _account_presenter.update_Profile();
                 },
                 titile: "Chỉnh sửa thông tin"),
             ItemAccount_OK(
                 icon: Ionicons.lock_closed_outline,
                 onpressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Edit_Password_Screen()));
+                  _account_presenter.update_Password();
                 },
                 titile: "Đổi mật khẩu"),
             ItemAccount_OK(
@@ -107,17 +102,17 @@ class _AccountState extends State<Account> {
                 onpressed: () async {
                   NetworkInfo networkInfo = NetworkInfo();
                   String? Mac = await networkInfo.getWifiBSSID();
-                  CherryToast.info(title: Text("${Mac}")).show(context);
+                  String? Wifi = await networkInfo.getWifiName();
+                  Sound().playBeepWarning();
+                  CherryToast.info(title: Text("Tên Wifi ${Wifi}\nMAC\n${Mac}"))
+                      .show(context);
                   print("MAC: $Mac");
                 },
                 titile: "Show MAC WIFI"),
             ItemAccount_OK(
                 icon: Ionicons.settings_outline,
                 onpressed: () {
-                  check_color = !check_color;
-                  context
-                      .read<Setting_Provider>()
-                      .set_background_color(check_color);
+                  _account_presenter.setting();
                 },
                 titile: "Cài đặt"),
             ItemAccount_OK(
@@ -145,7 +140,7 @@ class _AccountState extends State<Account> {
                                   width: 20,
                                   child: Text(
                                     "${context.watch<CountDown_Provider>().countdown()}",
-style: TextStyle(color: Colors.red),
+                                    style: TextStyle(color: Colors.red),
                                   ))
                               : TextButton(
                                   onPressed: () async {
@@ -190,24 +185,22 @@ style: TextStyle(color: Colors.red),
                     );
 
                     if (check_dele == true) {
-                      if (await NetworkWork_Presenters().delete_User(context
+                      if (await NetworkRequest().delete_User(context
                               .read<DataUser_Provider>()
                               .id_personnel()) ==
                           "Success") {
                         CherryToast.success(
                                 title: Text("Xóa tài khoản thành công"))
                             .show(context);
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Login_Screen_new()));
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => Login()));
                       } else {
                         CherryToast.error(title: Text("Xóa tài khoản thất bại"))
                             .show(context);
                       }
                     }
                   }
-},
+                },
                 titile: "Xóa tài khoản"),
             ItemAccount_OK(
                 icon: Ionicons.arrow_back_circle_outline,
@@ -247,7 +240,7 @@ style: TextStyle(color: Colors.red),
                         );
                       },
                     );
-                    logout(context);
+                   _account_presenter.logout(context);
                   }
                 },
                 titile: "Đăng xuất"),
@@ -262,26 +255,53 @@ style: TextStyle(color: Colors.red),
     id_per = prefs.getString('id_per');
   }
 
-  Future<void> logout(BuildContext context) async {
-    final respone = await http.get(Uri.parse(URL_LOGOUT));
-    if (respone.statusCode == 200) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-      await prefs.setBool("is_logout", true);
-      String? id_company = await prefs.getString('company_id');
-      await _firebaseMessaging.unsubscribeFromTopic("$id_company");
-      prefs.remove('company_id');
-      Navigator.pop(context);
+  // Future<void> logout(BuildContext context) async {
+  //   final respone = await http.get(Uri.parse(URL_LOGOUT));
+  //   if (respone.statusCode == 200) {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  //     await prefs.setBool("is_logout", true);
+  //     String? id_company = await prefs.getString('company_id');
+  //     await _firebaseMessaging.unsubscribeFromTopic("$id_company");
+  //     prefs.remove('company_id');
+  //     Navigator.pop(context);
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (context) => Login()));
+  //   }
+  // }
+
+  @override
+  void settings(String? message) {
+    Sound().playBeepWarning();
+    CherryToast.success(title: Text(message!)).show(context);
+    check_color = !check_color;
+    context.read<Setting_Provider>().set_background_color(check_color);
+  }
+
+  @override
+  void show_Mac_Wifi(String? name, String? mac) {
+    Sound().playBeepWarning();
+    CherryToast.info(title: Text("Tên Wifi ${name}\nMAC\n${mac}"))
+        .show(context);
+  }
+
+  @override
+  void update_Password() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => Edit_Password_Screen()));
+  }
+
+  @override
+  void update_Profile() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => Edit_Profile_Screen()));
+  }
+
+  @override
+  void logout(bool check) {
+    if (check == true) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Login()));
     }
-  }
-
-  void playBeep() async {
-    await player.play(AssetSource("sounds/tb.mp3"));
-  }
-
-  void playBeepWarning() async {
-    await player.play(AssetSource("sounds/warning.mp3"));
   }
 }

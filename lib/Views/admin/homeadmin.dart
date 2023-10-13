@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personnel_5chaumedia/Views/admin/location.dart';
 import 'package:personnel_5chaumedia/Views/admin/mac.dart';
-import 'package:personnel_5chaumedia/Views/loginnew.dart';
+import 'package:personnel_5chaumedia/Views/login/login.dart';
 import 'package:personnel_5chaumedia/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,7 +78,7 @@ class _HomeAdminState extends State<HomeAdmin> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool("is_logout", true);
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Login_Screen_new()));
+          context, MaterialPageRoute(builder: (context) => Login()));
     }
   }
 }

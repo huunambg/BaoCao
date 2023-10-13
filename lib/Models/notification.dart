@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:personnel_5chaumedia/Presenters/notification_presenter.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Notification_Provider extends ChangeNotifier{
@@ -12,7 +12,7 @@ class Notification_Provider extends ChangeNotifier{
   }
   String id_personnel()=> _id_personnel; 
 Future<void> set_count_notification_not_checked(String id)async{
- _check_exist_Notification_visted =await Notification_Presenter().get_count_notification_not_check(id);
+ _check_exist_Notification_visted =await NetworkRequest().get_count_notification_not_check(id);
  notifyListeners();
 }
 int check_exist_Notification_visted(){

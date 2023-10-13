@@ -3,7 +3,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:personnel_5chaumedia/Presenters/networks.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Set_Location extends StatefulWidget {
@@ -12,7 +12,6 @@ class Set_Location extends StatefulWidget {
   @override
   State<Set_Location> createState() => Set_LocationState();
 }
-
 class Set_LocationState extends State<Set_Location> {
   final latcontroller = TextEditingController();
   final lngcontroller = TextEditingController();
@@ -42,7 +41,7 @@ class Set_LocationState extends State<Set_Location> {
   void load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id_company = await prefs.getString('company_id');
-    var data = await NetworkWork_Presenters().getLocation_Admin(id_company);
+    var data = await NetworkRequest().getLocation_Admin(id_company);
     latitude = double.parse(data['latitude']);
     longtitude = double.parse(data['longitude']);
     id = data['id'].toString();
@@ -212,7 +211,7 @@ class Set_LocationState extends State<Set_Location> {
                       );
           
                       if (check_click == true) {
-                        status = await NetworkWork_Presenters().update_Location_Admin(
+                        status = await NetworkRequest().update_Location_Admin(
                             name, latcontroller.text, lngcontroller.text, metercontroller.text);
           
                         if (status == 200) {

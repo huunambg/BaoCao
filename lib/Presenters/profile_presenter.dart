@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:personnel_5chaumedia/constants.dart';
 
@@ -16,6 +15,7 @@ class Profile_Presenter{
   }
 
   Future<String> get_base64_img(String? id) async {
+    print('Request: ${URL_GET_BASE64_IMG}$id');
     final response = await http.get(Uri.parse('${URL_GET_BASE64_IMG}$id'));
     print("Get IMG :${response.statusCode}");
     if (response.statusCode == 200) {

@@ -5,10 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:personnel_5chaumedia/Views/login/login_Interface.dart';
 import 'package:personnel_5chaumedia/Presenters/login_presenter.dart';
 import 'package:personnel_5chaumedia/Views/admin/homeadmin.dart';
-import 'package:personnel_5chaumedia/Views/root.dart';
 import 'package:personnel_5chaumedia/Presenters/networks.dart';
+import 'package:personnel_5chaumedia/Views/user/root.dart';
+import 'package:personnel_5chaumedia/Widgets/dialog_login.dart';
 import 'package:personnel_5chaumedia/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +21,7 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<Login> implements Login_Interface {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isObscure = true;
@@ -27,7 +29,11 @@ class _LoginState extends State<Login> {
   NetworkWork_Presenters x = new NetworkWork_Presenters();
   AudioPlayer player = AudioPlayer();
   bool _isValidEmail = true;
-  Login_Presenter login_presenter = new Login_Presenter();
+  late Login_Presenter login_presenter;
+
+  _LoginState(){
+  login_presenter = new Login_Presenter(this);
+  }
 
   void _validateEmail(String input) {
     final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
@@ -223,7 +229,8 @@ class _LoginState extends State<Login> {
                   child: signInButton(
                     size,
                     () {
-                   login_presenter.login(context,_emailController.text,_passwordController.text,_rememberMe);
+                      login_presenter.login(context, _emailController.text,
+                          _passwordController.text, _rememberMe);
                     },
                   )),
               Expanded(
@@ -658,5 +665,41 @@ class _LoginState extends State<Login> {
 
   void playBeepWarning() async {
     await player.play(AssetSource("sounds/warning.mp3"));
+  }
+
+  @override
+  void login_error(String message) {
+    Dilalog_Login().dialog_login_error(context, message);
+  }
+
+  @override
+  void login_success(var data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var data1 = data['user'];
+    if (data1['role'] != "admin") {
+      var data2 = data['id_per'][0];
+      var data3 = data['pid'];
+      String? id_per = data2['id'].toString();
+      String? user_name = data1['name'].toString();
+      String? email = data1['email'];
+      String? id_personnel = data3[0]['personnel_id'];
+      String? phone = data['phone'][0]['phone'].toString();
+      // print(
+      //     "Phone $phone id_personnel: $id_personnel email $email ,user_name :$user_name ,id_per: $id_per ");
+      await prefs.setString('id_per', id_per);
+      await prefs.setString('user_name', user_name);
+      await prefs.setString('email', email!);
+      await prefs.setString('id_personnel', id_personnel!);
+      await prefs.setString('phone', phone);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => RootUser()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeAdmin()),
+      );
+    }
   }
 }

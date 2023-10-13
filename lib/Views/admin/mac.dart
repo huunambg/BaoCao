@@ -4,8 +4,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
 import 'package:personnel_5chaumedia/Views/admin/listmac.dart';
-import 'package:personnel_5chaumedia/Presenters/networks.dart';
 
 /// Example app for wifi_scan plugin.
 class Set_Mac_Wifi extends StatefulWidget {
@@ -127,7 +127,7 @@ class _Set_Mac_WifiState extends State<Set_Mac_Wifi> {
                           ),
                         );
                         if (check_click == true) {
-                          if (await NetworkWork_Presenters().add_MAC_WIFI(
+                          if (await NetworkRequest().add_MAC_WIFI(
                                   namecontroller.text, maccontroller.text) ==
                               "Success") {
                             CherryToast.success(

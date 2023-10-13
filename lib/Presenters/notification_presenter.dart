@@ -1,8 +1,30 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:personnel_5chaumedia/Views/user/notification/notification_interface.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
 import 'package:personnel_5chaumedia/constants.dart';
 
 class Notification_Presenter{
+     
+   late Notification_Interface _notification_interface;
+
+    Notification_Presenter(Notification_Interface notification_interface){
+      this._notification_interface = notification_interface;
+    }
+
+
+Future<void> get_Data() async {
+   List<dynamic> data = await NetworkRequest().fetchData_Notification();
+  _notification_interface.get_Notificatioon(data);
+
+
+}
+
+ void see_Detail_Notification(var data){
+  _notification_interface.see_Detail_Notification(data);
+ }
+ 
+
     Future<dynamic> fetchData_Notification() async {
     final response = await http.get(Uri.parse('$URL_GET_NOTIFICATION'));
 
@@ -13,6 +35,9 @@ class Notification_Presenter{
       return [];
     }
   }
+
+
+
 
   Future<int> get_count_notification_not_check(String? id) async {
     final response =

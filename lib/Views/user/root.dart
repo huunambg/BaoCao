@@ -6,10 +6,10 @@ import 'package:ionicons/ionicons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:personnel_5chaumedia/Models/datauser.dart';
 import 'package:personnel_5chaumedia/Models/location.dart';
-import 'package:personnel_5chaumedia/Presenters/notification.dart';
+import 'package:personnel_5chaumedia/Services/notification.dart';
 import 'package:personnel_5chaumedia/Presenters/profile_presenter.dart';
-import 'package:personnel_5chaumedia/Views/account.dart';
-import 'package:personnel_5chaumedia/Views/listnotification.dart';
+import 'package:personnel_5chaumedia/Views/user/acount/account.dart';
+import 'package:personnel_5chaumedia/Views/user/notification/listnotification.dart';
 import '/Models/notification.dart';
 import '/Models/wifi.dart';
 import 'package:provider/provider.dart';
@@ -194,10 +194,9 @@ void permison()async{
   }
 
   Future<void> load_save() async {
-    
-     await context.read<Notification_Provider>().set_id_personnel();
+    await context.read<Notification_Provider>().set_id_personnel();
     await context.read<DataUser_Provider>().set_id_name_personnel();
-     context.read<Notification_Provider>().set_count_notification_not_checked(context.read<DataUser_Provider>().id_personnel().toString());
+    context.read<Notification_Provider>().set_count_notification_not_checked(context.read<DataUser_Provider>().id_personnel().toString());
     String? base64_image = await Profile_Presenter().get_base64_img(context.read<DataUser_Provider>().id_per());
     context.read<DataUser_Provider>().set_base64_img(base64_image);
     context.read<DataUser_Provider>().set_base64_img_edit(base64_image);

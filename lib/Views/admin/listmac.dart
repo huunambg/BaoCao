@@ -1,9 +1,6 @@
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:personnel_5chaumedia/Models/datauser.dart';
-import 'package:personnel_5chaumedia/Presenters/networks.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
 
 class List_MAC extends StatefulWidget {
   const List_MAC({super.key});
@@ -28,7 +25,7 @@ class _List_MACState extends State<List_MAC> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-              future: NetworkWork_Presenters().get_Mac_admin(),
+              future: NetworkRequest().get_Mac_admin(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -70,7 +67,7 @@ class _List_MACState extends State<List_MAC> {
                               },
                             );
                             if (check_click == true) {
-                              if (await NetworkWork_Presenters().delete_MAC_WIFI(
+                              if (await NetworkRequest().delete_MAC_WIFI(
                                       snapshot.data[index]['id'].toString()) ==
                                   "Success") {
                                 CherryToast.success(

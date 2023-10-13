@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:personnel_5chaumedia/Models/datauser.dart';
 import 'package:personnel_5chaumedia/Presenters/profile_presenter.dart';
+import 'package:personnel_5chaumedia/Sounds/sound.dart';
 import 'package:personnel_5chaumedia/constants.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -202,6 +203,7 @@ class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
           .edit_ProfileS(context.read<DataUser_Provider>().id_per(),name_controller.text,email_controller.text,phone_controller.text,pass);
               Navigator.pop(context);
       if (massage != "Error") {
+        Sound().playBeepWarning();
         CherryToast.success(title: Text("Cập nhật dữ liệu thành công"))
             .show(context);
 
@@ -212,6 +214,7 @@ class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
         context.read<DataUser_Provider>().set_id_name_personnel();
             
       } else {
+        Sound().playBeepError();
         CherryToast.error(title: Text("Cập nhật dữ liệu thất bại"))
             .show(context);
       }

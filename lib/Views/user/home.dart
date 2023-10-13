@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,14 +5,14 @@ import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:personnel_5chaumedia/Presenters/rollcall_presenter.dart';
+import 'package:personnel_5chaumedia/Services/network_request.dart';
+import 'package:personnel_5chaumedia/Sounds/sound.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import '/Models/datauser.dart';
 import '/Models/detailrollcall.dart';
 import '/Models/location.dart';
 import '/Models/settings.dart';
 import '/Models/wifi.dart';
-import '../Presenters/networks.dart';
 import '/Widgets/appbar.dart';
 import '/Widgets/buttonrollcall.dart';
 import '/Widgets/detailhome.dart';
@@ -28,13 +27,12 @@ class HomePageUser extends StatefulWidget {
   State<HomePageUser> createState() => _HomePageUserState();
 }
 
-
 class _HomePageUserState extends State<HomePageUser> {
   String? id_per;
   String? current_address, Text_QR;
   int distance = 0;
   int meter = 0;
-  AudioPlayer player = AudioPlayer();
+
   String? get_MAC_WIFI;
   bool mac_check = false;
   String? rollcall_time;
@@ -45,7 +43,8 @@ class _HomePageUserState extends State<HomePageUser> {
   void dispose() {
     super.dispose();
   }
-  Rollcall_Presenter _rollcall_presenter = new Rollcall_Presenter();
+
+  NetworkRequest _rollcall_presenter = new NetworkRequest();
   var data;
   int? working_day;
   int? total_working_day;
@@ -62,19 +61,17 @@ class _HomePageUserState extends State<HomePageUser> {
     get_data_current_day();
   }
 
-Future<void> checkLocationPermission() async {
+  Future<void> checkLocationPermission() async {
     bool serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-      }
+      if (!serviceEnabled) {}
     }
 
     PermissionStatus permissionGranted = await location.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-      }
+      if (permissionGranted != PermissionStatus.granted) {}
     }
   }
 
@@ -93,7 +90,6 @@ Future<void> checkLocationPermission() async {
     await context.read<DetailRollCallUser_Provider>().set_Data_Day_OneDay();
     context.read<DetailRollCallUser_Provider>().set_break_time_rollcall();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +118,7 @@ Future<void> checkLocationPermission() async {
                     ontapface: () async {
                       CherryToast.warning(title: Text("Đang update!"))
                           .show(context);
-                      playBeepWarning();
+                     Sound().playBeepWarning();
                     },
                     ontapqr: () async {
                       if (context
@@ -132,29 +128,28 @@ Future<void> checkLocationPermission() async {
                         CherryToast.warning(
                                 title: Text("Bạn đã điểm danh hôm nay"))
                             .show(context);
-                        playBeepWarning();
+                        Sound().playBeepWarning();
                       } else {
-                          checking_dialog(h);
-                          await getcalculateDistance();
-                          await checkmac();
-                          if (check) {
-                            if (mounted != false) Navigator.pop(context);
-                            if (distance <= meter && mac_check == true) {
-                              _scanQRCode();
-                            } else if (mac_check == true && distance > meter) {
-                              error_distance_dialog(h);
-                            } else if (mac_check == false &&
-                                distance <= meter) {
-                              error_wifi_dialog(h);
-                            } else if (mac_check == false && distance > meter) {
-                              error_wifi_distance_dialog(h);
-                            }
+                        checking_dialog(h);
+                        await getcalculateDistance();
+                        await checkmac();
+                        if (check) {
+                          if (mounted != false) Navigator.pop(context);
+                          if (distance <= meter && mac_check == true) {
+                            _scanQRCode();
+                          } else if (mac_check == true && distance > meter) {
+                            error_distance_dialog(h);
+                          } else if (mac_check == false && distance <= meter) {
+                            error_wifi_dialog(h);
+                          } else if (mac_check == false && distance > meter) {
+                            error_wifi_distance_dialog(h);
                           }
-                          check = true;
+                        }
+                        check = true;
                       }
                     },
                   ),
-SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   CustomDetailHome(
@@ -208,9 +203,7 @@ SizedBox(
       leave_permission = data['leave_permission'];
       time = data['total_working_time'];
       leave_without_permission = data['leave_without_permission'];
-    } else {
-
-    }
+    } else {}
     if (mounted) {
       setState(() {});
     }
@@ -223,7 +216,7 @@ SizedBox(
     double fixedLatitude = double.parse(data3['latitude']); // kinh độ
     double fixedLongitude = double.parse(data3['longitude']); // vĩ độ
     Position currentPosition = await Geolocator.getCurrentPosition();
-     double distance = await Geolocator.distanceBetween(
+    double distance = await Geolocator.distanceBetween(
       currentPosition.latitude,
       currentPosition.longitude,
       fixedLatitude,
@@ -238,7 +231,7 @@ SizedBox(
     double _distance = await _calculateDistance();
     distance = _distance.round();
     print("Distance : $distance");
-     Text_QR = await _rollcall_presenter.get_Text_QR_Rollcall();
+    Text_QR = await _rollcall_presenter.get_Text_QR_Rollcall();
     if (mounted) {
       setState(() {});
     }
@@ -258,8 +251,8 @@ SizedBox(
       }
     }
     String formattedMacAddress = formattedMacParts.join(":");
-  //  print("GET MAC WIFI : ${formattedMacAddress}");
-    List<dynamic> mac = await NetworkWork_Presenters().get_MAC_WIFI();
+    //  print("GET MAC WIFI : ${formattedMacAddress}");
+    List<dynamic> mac = await NetworkRequest().get_MAC_WIFI();
     mac.forEach((element) {
       if (formattedMacAddress == element['address']) {
         mac_check = true;
@@ -299,27 +292,27 @@ SizedBox(
               title: Text("Điểm danh thành công"),
               toastDuration: Duration(seconds: 2),
             ).show(context);
-            playBeepSucces();
+            Sound().playBeepSucces();
             context.read<DetailRollCallUser_Provider>().set_Data_Day_OneDay();
           } else {
             CherryToast.error(title: Text("Bạn đã điểm danh hôm nay"))
                 .show(context);
-            playBeepError();
+            Sound().playBeepError();
           }
         } else {
           Navigator.pop(context);
           CherryToast.error(title: Text("Chưa tìm được vị trí của bạn!"))
               .show(context);
-          playBeepError();
+           Sound().playBeepError();
         }
       } else if (time_delay > 0) {
         Navigator.pop(context);
-CherryToast.error(
+        CherryToast.error(
           title: Text(
             "Bạn phải chờ $time_delay phút để điểm danh",
           ),
         ).show(context);
-        playBeepError();
+         Sound().playBeepError();
       }
     } else if (scanResult != Text_QR &&
         scanResult != "-1" &&
@@ -328,7 +321,7 @@ CherryToast.error(
         title: Text("Mã QR không hợp lệ !"),
         toastDuration: Duration(seconds: 2),
       ).show(context);
-      playBeepError();
+       Sound().playBeepError();
     }
   }
 
@@ -423,7 +416,8 @@ CherryToast.error(
       },
     );
   }
-void error_wifi_distance_dialog(double h) {
+
+  void error_wifi_distance_dialog(double h) {
     showDialog(
       context: context,
       builder: (context) {
@@ -452,7 +446,7 @@ void error_wifi_distance_dialog(double h) {
   }
 
   Future<int> get_caculator_time_rollcall() async {
-    String last_rollcall = await Rollcall_Presenter()
+    String last_rollcall = await NetworkRequest()
         .get_last_rollcall(context.read<DataUser_Provider>().id_personnel());
     print("Last rollcall: $last_rollcall");
     Duration difference =
@@ -465,16 +459,5 @@ void error_wifi_distance_dialog(double h) {
     return time_delay;
   }
 
-  void playBeepSucces() async {
-    await player.play(AssetSource("sounds/tb.mp3"));
-  }
-
-  void playBeepError() async {
-    await player.play(AssetSource("sounds/error.mp3"));
-  }
-
-  void playBeepWarning() async {
-    await player.play(AssetSource("sounds/warning.mp3"));
-  }
 
 }

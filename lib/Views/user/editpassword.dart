@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:personnel_5chaumedia/Models/datauser.dart';
 import 'package:personnel_5chaumedia/Presenters/profile_presenter.dart';
+import 'package:personnel_5chaumedia/Sounds/sound.dart';
 import 'package:personnel_5chaumedia/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,8 +14,6 @@ class Edit_Password_Screen extends StatefulWidget {
   @override
   State<Edit_Password_Screen> createState() => _Edit_Password_ScreenState();
 }
-
-// hihi
 
 class _Edit_Password_ScreenState extends State<Edit_Password_Screen> {
   bool check_old_pass = true;
@@ -152,6 +151,7 @@ class _Edit_Password_ScreenState extends State<Edit_Password_Screen> {
                         new_pass_controller.text == "" ||
                         renew_pass_controller.text == "") {
                       Navigator.pop(context);
+                       Sound().playBeepError();
                       CherryToast.warning(
                               title: Text("Vui lòng kiểm tra dữ liệu"))
                           .show(context);
@@ -174,6 +174,7 @@ class _Edit_Password_ScreenState extends State<Edit_Password_Screen> {
                                   new_pass_controller.text);
 
                           if (massage != "Error") {
+                            Sound().playBeepWarning();
                             CherryToast.success(
                                     title: Text("Cập nhật mật khẩu thành công"))
                                 .show(context);
@@ -185,16 +186,19 @@ class _Edit_Password_ScreenState extends State<Edit_Password_Screen> {
                             });
                             
                           } else {
+                              Sound().playBeepError();
                             CherryToast.error(
                                     title: Text("Cập nhật mật khẩu thất bại"))
                                 .show(context);
                           }
                         } else {
+                            Sound().playBeepError();
                           CherryToast.error(
                                   title: Text("Nhập lại mật khẩu không khớp"))
                               .show(context);
                         }
                       } else {
+                          Sound().playBeepError();
                         CherryToast.error(title: Text("Mật khẩu cũ không đúng"))
                             .show(context);
                       }
