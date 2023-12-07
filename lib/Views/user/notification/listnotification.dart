@@ -108,7 +108,7 @@ class _Notification_ScreenState extends State<Notification_Screen>
                                     maxLength: 60,
                                     size: 15),
                                 SizedBox(
-                                  height: 5,
+                                  height: 3,
                                 ),
                                 TruncateText(
                                     "${list_Notification[index]['content']}.",

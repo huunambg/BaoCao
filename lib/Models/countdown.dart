@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-
 class CountDown_Provider extends ChangeNotifier{
   int _countdown =0;
  bool _check_countdown =false;

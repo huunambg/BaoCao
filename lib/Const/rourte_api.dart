@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 const String SERVER_NAME ='ictuoj.click/api';
+//  const String SERVER_NAME ='fe24-2402-800-6195-b353-b42a-168a-a4c3-6afc.ngrok-free.app/qlnhansu-api5/public/api';
 const String URL_LOGIN = 'https://$SERVER_NAME/login';
 const String URL_LOGOUT = 'https://$SERVER_NAME/logout';
 const String URL_PERSONNEL = 'https://$SERVER_NAME/personnel';

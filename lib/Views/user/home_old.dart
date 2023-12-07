@@ -21,13 +21,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
-class HomePageUser extends StatefulWidget {
-  const HomePageUser({super.key});
+class HomePageUser_old extends StatefulWidget {
+  const HomePageUser_old({super.key});
   @override
-  State<HomePageUser> createState() => _HomePageUserState();
+  State<HomePageUser_old> createState() => _HomePageUser_oldState();
 }
 
-class _HomePageUserState extends State<HomePageUser> {
+class _HomePageUser_oldState extends State<HomePageUser_old> {
   String? id_per;
   String? current_address, Text_QR;
   int distance = 0;

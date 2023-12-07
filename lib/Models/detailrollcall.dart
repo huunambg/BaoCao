@@ -50,7 +50,6 @@ class DetailRollCallUser_Provider extends ChangeNotifier {
     // print(_count_day_int_month);
     notifyListeners();
   }
-
  Future <void> set_Data_Day_OneDay_Find(DateTime dateTime) async {
     String day = DateFormat("dd").format(dateTime);
     String month = DateFormat("MM").format(dateTime);

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:personnel_5chaumedia/Views/login/login_Interface.dart';
 import 'package:personnel_5chaumedia/Views/login/login.dart';
 import 'package:personnel_5chaumedia/Widgets/dialog_login.dart';
-import 'package:personnel_5chaumedia/constants.dart';
+import 'package:personnel_5chaumedia/Const/rourte_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login_Presenter {
@@ -20,8 +20,7 @@ class Login_Presenter {
       'email': email,
       'password': password,
     };
-    String url =URL_LOGIN;
-
+    String url = URL_LOGIN;
 
     try {
       Dilalog_Login().dialog_loading(context);
@@ -43,7 +42,28 @@ class Login_Presenter {
           await prefs.remove('rememberMe');
         }
         var data = jsonDecode(response.body);
-        _login_interface.login_success(data);
+
+        var data1 = data['user'];
+        if (data1['role'] != "admin") {
+          var data2 = data['id_per'][0];
+          var data3 = data['pid'];
+          String? id_per = data2['id'].toString();
+          String? user_name = data1['name'].toString();
+          String? email = data1['email'];
+          String? id_personnel = data3[0]['personnel_id'];
+          String? phone = data['phone'][0]['phone'].toString();
+          // print(
+          //     "Phone $phone id_personnel: $id_personnel email $email ,user_name :$user_name ,id_per: $id_per ");
+          await prefs.setString('id_per', id_per);
+          await prefs.setString('user_name', user_name);
+          await prefs.setString('email', email!);
+          await prefs.setString('id_personnel', id_personnel!);
+          await prefs.setString('phone', phone);
+
+          _login_interface.login_success_personnel();
+        } else {
+          _login_interface.login_success_admin();
+        }
       } else {
         Navigator.pop(context);
         var responseData = data;
@@ -61,13 +81,12 @@ class Login_Presenter {
     String? savedEmail = await prefs.getString('email');
     String? savedPassword = await prefs.getString('password');
     bool? is_Logout = await prefs.getBool("is_logout");
-      String url =URL_LOGIN;
+    String url = URL_LOGIN;
     if (savedEmail != null && savedPassword != null && is_Logout == false) {
       Map<String, dynamic> data = {
         'email': savedEmail,
         'password': savedPassword,
       };
-
       try {
         var response = await http.post(
           Uri.parse("$url"),
@@ -76,17 +95,39 @@ class Login_Presenter {
         );
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body);
-          _login_interface.login_success(data);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          var data1 = data['user'];
+          print(data);
+          if (data['role'] != "admin") {
+            var data2 = data['id_per'][0];
+            var data3 = data['pid'];
+            String? id_per = data2['id'].toString();
+            String? user_name = data1['name'].toString();
+            String? email = data1['email'];
+            String? id_personnel = data3[0]['personnel_id'];
+            String? phone = data['phone'][0]['phone'].toString();
+            // print(
+            //     "Phone $phone id_personnel: $id_personnel email $email ,user_name :$user_name ,id_per: $id_per ");
+            await prefs.setString('id_per', id_per);
+            await prefs.setString('user_name', user_name);
+            await prefs.setString('email', email!);
+            await prefs.setString('id_personnel', id_personnel!);
+            await prefs.setString('phone', phone);
+            _login_interface.login_success_personnel();
+          } else {
+            _login_interface.login_success_admin();
+          }
+          _login_interface.login_success_personnel();
         } else {
           // Đăng nhập thất bại
           var responseData = jsonDecode(response.body);
           String errorMessage = responseData['message'];
-        _login_interface.login_error(errorMessage);
+          _login_interface.login_error(errorMessage);
         }
       } catch (error) {
         // Xảy ra lỗi kết nối
-          String errorMessage = "Đã xảy ra lỗi kết nối !";
-       _login_interface.login_error(errorMessage);
+        String errorMessage = "Đã xảy ra lỗi kết nối !";
+        _login_interface.login_error(errorMessage);
       }
     } else {
       Navigator.pushReplacement(

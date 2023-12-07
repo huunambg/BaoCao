@@ -2,15 +2,15 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:personnel_5chaumedia/Models/datauser.dart';
-import 'package:personnel_5chaumedia/Presenters/profile_presenter.dart';
+import 'package:personnel_5chaumedia/Presenters/edit_profile_presenter.dart';
 import 'package:personnel_5chaumedia/Sounds/sound.dart';
-import 'package:personnel_5chaumedia/constants.dart';
+import 'package:personnel_5chaumedia/Const/rourte_api.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
+import 'package:personnel_5chaumedia/Views/user/edit_profile/edit_profile_interface.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Edit_Profile_Screen extends StatefulWidget {
   const Edit_Profile_Screen({super.key});
@@ -19,7 +19,13 @@ class Edit_Profile_Screen extends StatefulWidget {
   State<Edit_Profile_Screen> createState() => _Edit_Profile_ScreenState();
 }
 
-class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
+class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen>
+    implements Edit_Profile_Interface {
+  late Edit_Profile_Presenter _edit_profile_presenter;
+
+  _Edit_Profile_ScreenState() {
+    _edit_profile_presenter = new Edit_Profile_Presenter(this);
+  }
   final phone_controller = TextEditingController();
   final name_controller = TextEditingController();
   final email_controller = TextEditingController();
@@ -47,7 +53,7 @@ class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
         Uint8List imagebytes = await imagefile.readAsBytes();
         base64String = base64.encode(imagebytes);
         context.read<DataUser_Provider>().set_base64_img_edit(base64String);
-        update_avatar();
+        _edit_profile_presenter.update_avatar(context, base64String);
       } else {
         print('No image is selected');
       }
@@ -176,7 +182,7 @@ class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
                           );
                         },
                       );
-                      update_Profile();
+                     _edit_profile_presenter.update_Profile(context, name_controller.text, email_controller.text, phone_controller.text);
                     }
                   },
                   child: const Text(
@@ -192,93 +198,18 @@ class _Edit_Profile_ScreenState extends State<Edit_Profile_Screen> {
     );
   }
 
-  Future<void> update_Profile() async {
-    if (phone_controller.text != "" &&
-        int.tryParse(phone_controller.text) != null &&
-        email_controller.text != "" &&
-        name_controller.text != "") {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? pass = await prefs.getString('password');
-      String? massage = await Profile_Presenter()
-          .edit_ProfileS(context.read<DataUser_Provider>().id_per(),name_controller.text,email_controller.text,phone_controller.text,pass);
-              Navigator.pop(context);
-      if (massage != "Error") {
-        Sound().playBeepWarning();
-        CherryToast.success(title: Text("Cập nhật dữ liệu thành công"))
-            .show(context);
 
-        await  prefs.setString('user_name',name_controller.text);
-         await prefs.setString('email',email_controller.text);
-         await prefs.setString('phone',phone_controller.text);
-        
-        context.read<DataUser_Provider>().set_id_name_personnel();
-            
-      } else {
-        Sound().playBeepError();
-        CherryToast.error(title: Text("Cập nhật dữ liệu thất bại"))
-            .show(context);
-      }
-    }
+
+  @override
+  void update_Profile_Error(String message) {
+    Sound().playBeepError();
+    CherryToast.error(title: Text("$message")).show(context);
   }
 
-  Future<void> update_avatar() async {
-    bool check = false;
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Ảnh đại diện"),
-          content: Text("Bạn có muốn cập nhật ảnh đại diện"),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.read<DataUser_Provider>().set_base64_img_edit(
-                      context.read<DataUser_Provider>().base64_img());
-                },
-                child: Text("Hủy")),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  check = true;
-                },
-                child: Text("Xác nhận"))
-          ],
-        );
-      },
-    );
-    if (check == true) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Center(
-                child: Lottie.asset("assets/lottie/loading.json"),
-              ),
-            ),
-          );
-        },
-      );
-
-      if (base64String == "") {
-        Navigator.pop(context);
-        CherryToast.error(title: Text("Vui lòng chọn ảnh mới")).show(context);
-      } else {
-        String massaging = await Profile_Presenter()
-            .edit_img(context.read<DataUser_Provider>().id_per(), base64String);
-        Navigator.pop(context);
-        if (massaging != "Error") {
-          CherryToast.success(title: Text("Cập nhật ảnh đại diện thành công"))
-              .show(context);
-          context.read<DataUser_Provider>().set_base64_img(base64String);
-        } else {
-          CherryToast.error(title: Text("Cập nhật ảnh thất bại")).show(context);
-        }
-        check = false;
-      }
-    }
+  @override
+  void update_Profile_Succes(String message) {
+     Sound().playBeepWarning();
+    CherryToast.success(title: Text("$message")).show(context);
   }
 }
 

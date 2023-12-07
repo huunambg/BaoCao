@@ -8,10 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:personnel_5chaumedia/Views/login/login_Interface.dart';
 import 'package:personnel_5chaumedia/Presenters/login_presenter.dart';
 import 'package:personnel_5chaumedia/Views/admin/homeadmin.dart';
-import 'package:personnel_5chaumedia/Presenters/networks.dart';
 import 'package:personnel_5chaumedia/Views/user/root.dart';
 import 'package:personnel_5chaumedia/Widgets/dialog_login.dart';
-import 'package:personnel_5chaumedia/constants.dart';
+import 'package:personnel_5chaumedia/Const/rourte_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -26,13 +25,12 @@ class _LoginState extends State<Login> implements Login_Interface {
   TextEditingController _passwordController = TextEditingController();
   bool _isObscure = true;
   bool _rememberMe = false;
-  NetworkWork_Presenters x = new NetworkWork_Presenters();
   AudioPlayer player = AudioPlayer();
   bool _isValidEmail = true;
   late Login_Presenter login_presenter;
 
-  _LoginState(){
-  login_presenter = new Login_Presenter(this);
+  _LoginState() {
+    login_presenter = new Login_Presenter(this);
   }
 
   void _validateEmail(String input) {
@@ -673,33 +671,18 @@ class _LoginState extends State<Login> implements Login_Interface {
   }
 
   @override
-  void login_success(var data) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var data1 = data['user'];
-    if (data1['role'] != "admin") {
-      var data2 = data['id_per'][0];
-      var data3 = data['pid'];
-      String? id_per = data2['id'].toString();
-      String? user_name = data1['name'].toString();
-      String? email = data1['email'];
-      String? id_personnel = data3[0]['personnel_id'];
-      String? phone = data['phone'][0]['phone'].toString();
-      // print(
-      //     "Phone $phone id_personnel: $id_personnel email $email ,user_name :$user_name ,id_per: $id_per ");
-      await prefs.setString('id_per', id_per);
-      await prefs.setString('user_name', user_name);
-      await prefs.setString('email', email!);
-      await prefs.setString('id_personnel', id_personnel!);
-      await prefs.setString('phone', phone);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => RootUser()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeAdmin()),
-      );
-    }
+  void login_success_admin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomeAdmin()),
+    );
+  }
+
+  @override
+  void login_success_personnel() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => RootUser()),
+    );
   }
 }

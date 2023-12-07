@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Setting_Provider extends ChangeNotifier{
   int _background_color = 0xFFFFFFF;
-  Color _textcolor = Colors.black;
+  Color _textcolor = const Color.fromARGB(255, 241, 197, 197);
   void set_background_color(bool check){
     if(check == false){
       _background_color = 0xFFFFFFF;

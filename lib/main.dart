@@ -4,7 +4,6 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:personnel_5chaumedia/Models/countdown.dart';
-import 'package:personnel_5chaumedia/Models/permission.dart';
 import 'package:personnel_5chaumedia/Views/login/loading.dart';
 import 'Models/data.dart';
 import '/Models/datauser.dart';
@@ -23,7 +22,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   initializeDateFormatting('vi_VN', null).then((_) {
     runApp(MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => Notification_Provider()),
@@ -34,7 +32,6 @@ void main() async {
       ChangeNotifierProvider(create: (_) => Data_Provider()),
       ChangeNotifierProvider(create: (_) => Location_Provider()),
       ChangeNotifierProvider(create: (_) => CountDown_Provider()),
-      ChangeNotifierProvider(create: (_) => Permission_Provider()),
     ], child: MyApp()));
   });
 }

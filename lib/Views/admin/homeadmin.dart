@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:personnel_5chaumedia/Views/admin/location.dart';
 import 'package:personnel_5chaumedia/Views/admin/mac.dart';
 import 'package:personnel_5chaumedia/Views/login/login.dart';
-import 'package:personnel_5chaumedia/constants.dart';
+import 'package:personnel_5chaumedia/Const/rourte_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,11 +16,8 @@ class HomeAdmin extends StatefulWidget {
 class _HomeAdminState extends State<HomeAdmin> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -47,18 +44,18 @@ class _HomeAdminState extends State<HomeAdmin> {
               image: "assets/location.png",
               text: "Thiết lập vị trí",
               onpressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Set_Location()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Set_Location()));
               },
             ),
             CustomItemHome(
               image: "assets/wifi.png",
               text: "Thiết lập Wifi",
               onpressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Set_Mac_Wifi()),
-                  );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Set_Mac_Wifi()),
+                );
               },
             ),
             CustomItemHome(

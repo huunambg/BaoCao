@@ -17,7 +17,7 @@ class Set_LocationState extends State<Set_Location> {
   final lngcontroller = TextEditingController();
   final metercontroller = TextEditingController();
   final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
   double lat = 0;
   double long = 0;
   LatLng? latLng;

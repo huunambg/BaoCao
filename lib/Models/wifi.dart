@@ -24,7 +24,6 @@ class Wifi_Provider extends ChangeNotifier {
         _name = "Không có";
       }
     }
-
     notifyListeners();
   }
 

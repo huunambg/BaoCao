@@ -36,7 +36,6 @@ class _ManamentRollCall_ScreenState extends State<ManamentRollCall_Screen> {
   int count_between = 0;
   bool checkbetween = false;
 
-  List<Map<String, dynamic>> list_Data_Day_One_Day = [];
   void _loadSaved() async {
     await context
         .read<DetailRollCallUser_Provider>()
