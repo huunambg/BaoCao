@@ -13,3 +13,5 @@ Một số hình ảnh của hệ thống :
 
 # Quản trị
 ![Mô tả ảnh](assets//images/1.jpg)
+# Nhân viên
+![Mô tả ảnh](assets//images/2.jpg)
