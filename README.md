@@ -1,16 +1,9 @@
 # Báo cáo hệ thống chấm công cho công ty 5 Châu Media
 
-A new Flutter project.
+## Giới thiệu
+# Hệ thống chấm công 5 châu media
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Các tính năng của ứng dụng :
++ Chấm công bằng QR vói điều kiện Wifi và Vị trí phải hợp hệ theo công ty
++ Hỗ trợ 2 nền tảng Android và IOS
++ Quản lý nhân viên dễ dàng với trang web quản trị 
